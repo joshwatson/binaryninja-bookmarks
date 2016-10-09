@@ -21,8 +21,6 @@ This plugin requires the following minimum version of Binary Ninja:
 
  * dev (Personal) - 1.0.dev-71
  * dev (Commercial) - 1.0.dev-71
- * release (Commercial) - 1.0.7
- * release (Personal) - 1.0.7
 
 
 
