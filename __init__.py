@@ -28,10 +28,10 @@ import os
 import binaryninja as bn
 
 def create_bookmark(view, address):
-    if not view.file.data.get('bookmarks'):
-        view.file.data['bookmarks'] = OrderedDict()
+    if not view.file.session_data.get('bookmarks'):
+        view.file.session_data['bookmarks'] = OrderedDict()
 
-    bookmarks = view.file.data['bookmarks']
+    bookmarks = view.file.session_data['bookmarks']
 
     bookmark_name = bn.get_text_line_input(
         "Create new bookmark", "Enter bookmark name:"
@@ -40,10 +40,10 @@ def create_bookmark(view, address):
         bookmarks[address] = bookmark_name
 
 def goto_bookmark(view):
-    if not view.file.data.get('bookmarks'):
-        view.file.data['bookmarks'] = OrderedDict()
+    if not view.file.session_data.get('bookmarks'):
+        view.file.session_data['bookmarks'] = OrderedDict()
 
-    bookmarks = view.file.data['bookmarks']
+    bookmarks = view.file.session_data['bookmarks']
 
     if not bookmarks:
         bn.show_message_box(
@@ -69,7 +69,7 @@ def load_bookmarks(view):
     if filename is None:
         return
 
-    if view.file.data.get('bookmarks'):
+    if view.file.session_data.get('bookmarks'):
         overwrite = bn.show_message_box(
             'Bookmarks exist',
             'Overwrite existing bookmarks?',
@@ -78,11 +78,13 @@ def load_bookmarks(view):
         if not overwrite:
             return
     else:
-        view.file.data['bookmarks'] = OrderedDict()
+        view.file.session_data['bookmarks'] = OrderedDict()
 
     try:
         with open(filename, 'r') as bookmarks_file:
-            view.file.data['bookmarks'].update(pickle.load(bookmarks_file))
+            view.file.session_data['bookmarks'].update(
+                pickle.load(bookmarks_file)
+            )
     except ValueError:
         bn.show_message_box(
             'Invalid Bookmarks',
@@ -91,7 +93,7 @@ def load_bookmarks(view):
         )
 
 def save_bookmarks(view):
-    if not view.file.data.get('bookmarks'):
+    if not view.file.session_data.get('bookmarks'):
         return
 
     default_name = os.path.splitext(view.file.filename)[0] + '.bnbm'
@@ -104,7 +106,7 @@ def save_bookmarks(view):
     try:
         with open(filename, 'w') as bookmarks_file:
             pickle.dump(
-                view.file.data['bookmarks'],
+                view.file.session_data['bookmarks'],
                 bookmarks_file
             )
     except ValueError:
