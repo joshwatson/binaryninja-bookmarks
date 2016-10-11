@@ -1,4 +1,4 @@
-# Bookmarks (v0.1b)
+# Bookmarks (v0.2b)
 Author: **Josh Watson**
 
 _A plugin that adds bookmarking functionality._
@@ -19,8 +19,7 @@ Then create a python file called `bookmarks.py` with the contents
 
 This plugin requires the following minimum version of Binary Ninja:
 
- * dev (Personal) - 1.0.dev-71
- * dev (Commercial) - 1.0.dev-71
+ * dev - 1.0.dev-87
 
 
 
