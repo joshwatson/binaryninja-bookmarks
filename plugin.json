@@ -12,7 +12,7 @@
 		"version": "0.2b",
 		"author": "Josh Watson",
 		"minimumBinaryNinjaVersion": {
-			"dev": "1.0.dev-87",
+			"dev": "1.0.dev-87"
 		}
 	}
 }
