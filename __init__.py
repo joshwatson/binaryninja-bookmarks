@@ -48,7 +48,7 @@ def goto_bookmark(view):
     if not bookmarks:
         bn.show_message_box(
             'Bookmark error', 'There are no bookmarks yet.',
-            icon=bn.core.ErrorIcon
+            icon=bn.enums.MessageBoxIcon.ErrorIcon
         )
         return
 
@@ -73,7 +73,7 @@ def load_bookmarks(view):
         overwrite = bn.show_message_box(
             'Bookmarks exist',
             'Overwrite existing bookmarks?',
-            buttons=bn.core.YesNoButtonSet)
+            buttons=bn.enums.MessageBoxButtonSet.YesNoButtonSet)
 
         if not overwrite:
             return
@@ -89,7 +89,7 @@ def load_bookmarks(view):
         bn.show_message_box(
             'Invalid Bookmarks',
             'The bookmarks file could not be read',
-            icon=bn.core.ErrorIcon
+            icon=bn.enums.MessageBoxIcon.ErrorIcon
         )
 
 def save_bookmarks(view):
@@ -113,7 +113,7 @@ def save_bookmarks(view):
         bn.show_message_box(
             'Error Saving Bookmarks',
             'The bookmarks file could not be saved',
-            icon=bn.core.ErrorIcon
+            icon=bn.enums.MessageBoxIcon.ErrorIcon
         )
 
 
