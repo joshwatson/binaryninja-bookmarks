@@ -39,6 +39,7 @@ def create_bookmark(view, address):
     if bookmark_name:
         bookmarks[address] = bookmark_name
         view.store_metadata("bookmarks", bookmarks)
+        view.modified = True
 
 
 def goto_bookmark(view):
