@@ -22,28 +22,31 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 '''
 from collections import OrderedDict
-import pickle
-import os
 
 import binaryninja as bn
 
-def create_bookmark(view, address):
-    if not view.file.session_data.get('bookmarks'):
-        view.file.session_data['bookmarks'] = OrderedDict()
 
-    bookmarks = view.file.session_data['bookmarks']
+def create_bookmark(view, address):
+    try:
+        bookmarks = view.query_metadata('bookmarks')
+    except KeyError:
+        bookmarks = OrderedDict()
+        view.store_metadata('bookmarks', bookmarks)
 
     bookmark_name = bn.get_text_line_input(
         "Create new bookmark", "Enter bookmark name:"
     )
     if bookmark_name:
         bookmarks[address] = bookmark_name
+        view.store_metadata("bookmarks", bookmarks)
+
 
 def goto_bookmark(view):
-    if not view.file.session_data.get('bookmarks'):
-        view.file.session_data['bookmarks'] = OrderedDict()
-
-    bookmarks = view.file.session_data['bookmarks']
+    try:
+        bookmarks = view.query_metadata('bookmarks')
+    except KeyError:
+        bookmarks = OrderedDict()
+        view.store_metadata('bookmarks', bookmarks)
 
     if not bookmarks:
         bn.show_message_box(
@@ -52,78 +55,22 @@ def goto_bookmark(view):
         )
         return
 
+    # Metadata can only store string keys in dictionaries currently.
+    # Therefore, we have to convert keys to integers.
     chosen_bookmark = bn.get_choice_input(
         'Go to bookmark', 'Bookmarks:',
-        ['0x{:x} {}'.format(addr, bookmark)
+        ['0x{:x} {}'.format(int(addr), bookmark)
          for addr, bookmark in bookmarks.iteritems()]
     )
 
+    # Again, we hae to convert string keys to integers.
     if chosen_bookmark is not None:
-        navigate_to = bookmarks.keys()[chosen_bookmark]
+        navigate_to = int(bookmarks.keys()[chosen_bookmark])
 
         view.file.navigate(view.file.view, navigate_to)
-
-def load_bookmarks(view):
-    filename = bn.get_open_filename_input('Load bookmarks', '*.bnbm')
-
-    if filename is None:
-        return
-
-    if view.file.session_data.get('bookmarks'):
-        overwrite = bn.show_message_box(
-            'Bookmarks exist',
-            'Overwrite existing bookmarks?',
-            buttons=bn.enums.MessageBoxButtonSet.YesNoButtonSet)
-
-        if not overwrite:
-            return
-    else:
-        view.file.session_data['bookmarks'] = OrderedDict()
-
-    try:
-        with open(filename, 'r') as bookmarks_file:
-            view.file.session_data['bookmarks'].update(
-                pickle.load(bookmarks_file)
-            )
-    except ValueError:
-        bn.show_message_box(
-            'Invalid Bookmarks',
-            'The bookmarks file could not be read',
-            icon=bn.enums.MessageBoxIcon.ErrorIcon
-        )
-
-def save_bookmarks(view):
-    if not view.file.session_data.get('bookmarks'):
-        return
-
-    default_name = os.path.splitext(view.file.filename)[0] + '.bnbm'
-    filename = bn.get_save_filename_input(
-        'Save bookmarks',
-        '*.bnbm',
-        default_name
-        )
-
-    try:
-        with open(filename, 'w') as bookmarks_file:
-            pickle.dump(
-                view.file.session_data['bookmarks'],
-                bookmarks_file
-            )
-    except ValueError:
-        bn.show_message_box(
-            'Error Saving Bookmarks',
-            'The bookmarks file could not be saved',
-            icon=bn.enums.MessageBoxIcon.ErrorIcon
-        )
 
 
 bn.PluginCommand.register_for_address(
     'Create Bookmark', 'Create a bookmark at this address.', create_bookmark
 )
 bn.PluginCommand.register('Go to Bookmark', 'Go to a bookmark.', goto_bookmark)
-bn.PluginCommand.register(
-    'Load Bookmarks', 'Load bookmarks from file.', load_bookmarks
-)
-bn.PluginCommand.register(
-    'Save Bookmarks', 'Save bookmarks to file.', save_bookmarks
-)
