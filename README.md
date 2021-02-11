@@ -1,9 +1,11 @@
-# Bookmarks (v0.3b)
+# Bookmarks (v0.3b) **DEPRECATED**
 Author: **Josh Watson**
 
 _A plugin that adds bookmarking functionality._
 
 ## Description:
+
+# !!! This plugin is deprecated, now that Binary Ninja has tags as part of the Core !!!
 
 This plugin enables a Binary Ninja user to bookmark addresses of interest and quickly navigate back to them at a later time.
 
